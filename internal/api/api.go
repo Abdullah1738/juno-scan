@@ -49,7 +49,8 @@ type Server struct {
 	st store.Store
 	bf *backfill.Service
 
-	bearerToken string
+	bearerToken  string
+	witnessSlots chan struct{}
 }
 
 type Option func(*Server)
@@ -71,7 +72,10 @@ func New(st store.Store, opts ...Option) (*Server, error) {
 	if st == nil {
 		return nil, errors.New("api: store is nil")
 	}
-	s := &Server{st: st}
+	s := &Server{
+		st:           st,
+		witnessSlots: make(chan struct{}, 1),
+	}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(s)
@@ -639,6 +643,14 @@ func (s *Server) handleOrchardWitness(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(req.Positions) == 0 || len(req.Positions) > 1000 {
 		http.Error(w, "positions must be between 1 and 1000", http.StatusBadRequest)
+		return
+	}
+	select {
+	case s.witnessSlots <- struct{}{}:
+		defer func() { <-s.witnessSlots }()
+	default:
+		w.Header().Set("Retry-After", "1")
+		http.Error(w, "witness busy", http.StatusServiceUnavailable)
 		return
 	}
 

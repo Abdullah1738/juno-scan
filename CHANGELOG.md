@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.7-mainnet (2026-07-31)
+
+- Reject concurrent Orchard witness computations so timed-out synchronous FFI work cannot accumulate and starve the scanner.
+
 ## v1.4.5 (2026-03-28)
 
 - Fix scanner shutdown ordering so Pebble closes only after scanner and publisher goroutines exit.

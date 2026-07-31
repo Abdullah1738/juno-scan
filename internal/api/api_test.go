@@ -1,6 +1,30 @@
 package api
 
-import "testing"
+import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+)
+
+func TestOrchardWitnessRejectsConcurrentComputation(t *testing.T) {
+	s := &Server{witnessSlots: make(chan struct{}, 1)}
+	s.witnessSlots <- struct{}{}
+
+	req := httptest.NewRequest(http.MethodPost, "/v1/orchard/witness", strings.NewReader(`{"positions":[0]}`))
+	rec := httptest.NewRecorder()
+	s.handleOrchardWitness(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status=%d want %d", rec.Code, http.StatusServiceUnavailable)
+	}
+	if got := rec.Header().Get("Retry-After"); got != "1" {
+		t.Fatalf("Retry-After=%q want 1", got)
+	}
+	if got := rec.Body.String(); got != "witness busy\n" {
+		t.Fatalf("body=%q want %q", got, "witness busy\\n")
+	}
+}
 
 func TestIsSafeWalletID(t *testing.T) {
 	tests := []struct {
