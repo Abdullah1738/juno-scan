@@ -17,7 +17,7 @@ import (
 )
 
 func TestRun_GracefulShutdownDuringScan(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Minute)
 	defer cancel()
 
 	jd, err := testutil.StartJunocashd(ctx, testutil.JunocashdConfig{})
@@ -31,7 +31,7 @@ func TestRun_GracefulShutdownDuringScan(t *testing.T) {
 
 	// The pinned linux/amd64 regtest daemon is emulated on arm64 developer
 	// machines and can take longer than 30 seconds to generate this fixture.
-	generateCtx, generateCancel := context.WithTimeout(ctx, 90*time.Second)
+	generateCtx, generateCancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer generateCancel()
 	if out, err := jd.CLICommand(generateCtx, "generate", "50").CombinedOutput(); err != nil {
 		t.Fatalf("generate: %v\n%s", err, out)

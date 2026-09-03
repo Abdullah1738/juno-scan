@@ -160,7 +160,7 @@ func StartJunocashd(ctx context.Context, cfg JunocashdConfig) (*RunningJunocashd
 		ZMQHashBlockEndpoint: zmqHashBlockEndpoint,
 	}
 
-	if err := r.waitForRPC(ctx, 25*time.Second); err != nil {
+	if err := r.waitForRPC(ctx, 3*time.Minute); err != nil {
 		_ = r.Stop(context.Background())
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func connectExternalJunocashd(ctx context.Context, rpcURL string) (*RunningJunoc
 		dockerRPCPort:        internalRPCPort,
 	}
 
-	if err := r.waitForRPC(ctx, 25*time.Second); err != nil {
+	if err := r.waitForRPC(ctx, 3*time.Minute); err != nil {
 		return nil, err
 	}
 	return r, nil

@@ -14,7 +14,7 @@ endif
 
 GOCACHE ?= $(CURDIR)/.cache/go-build
 GO_TEST_TIMEOUT ?= 20m
-JUNOCASHD_TEST_IMAGE ?= juno-scan-junocashd-test:0.9.12
+JUNOCASHD_TEST_IMAGE ?= juno-scan-junocashd-test:0.9.13
 build: rust-build
 	@mkdir -p $(BIN_DIR)
 	GOWORK=off GOCACHE=$(GOCACHE) go build -o $(BIN) ./cmd/juno-scan

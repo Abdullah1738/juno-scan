@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	defaultJunocashVersion  = "0.9.12"
+	defaultJunocashVersion  = "0.9.13"
 	defaultPostgresImage    = "postgres:16-alpine"
 	defaultMySQLImage       = "mysql:8.4"
 	defaultNATSImage        = "nats:2.10-alpine"
@@ -188,7 +188,7 @@ func startJunocashd(ctx context.Context, rpcUser, rpcPass string) (testcontainer
 			"-rpcpassword=" + rpcPass,
 			"-zmqpubhashblock=tcp://0.0.0.0:28332",
 		},
-		WaitingFor: wait.ForListeningPort(nat.Port("8232/tcp")).WithStartupTimeout(60 * time.Second),
+		WaitingFor: wait.ForListeningPort(nat.Port("8232/tcp")).WithStartupTimeout(3 * time.Minute),
 	}
 	if image := strings.TrimSpace(os.Getenv("JUNO_TEST_JUNOCASHD_IMAGE")); image != "" {
 		req.Image = image
