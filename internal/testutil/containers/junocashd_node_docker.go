@@ -89,7 +89,7 @@ func StartJunocashdNode(ctx context.Context, cfg JunocashdNodeConfig) (*Junocash
 			fmt.Sprintf("%d/tcp", p2pPort),
 		},
 		Cmd:        args,
-		WaitingFor: wait.ForListeningPort(nat.Port("8232/tcp")).WithStartupTimeout(60 * time.Second),
+		WaitingFor: wait.ForListeningPort(nat.Port("8232/tcp")).WithStartupTimeout(3 * time.Minute),
 	}
 	if image := strings.TrimSpace(os.Getenv("JUNO_TEST_JUNOCASHD_IMAGE")); image != "" {
 		req.Image = image
